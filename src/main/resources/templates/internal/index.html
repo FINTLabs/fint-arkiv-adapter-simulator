@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="no" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Archive Adapter Simulator – Admin</title>
+    <link rel="stylesheet" th:href="@{/admin.css}"/>
+</head>
+<body>
+<div class="page">
+    <header class="hero">
+        <div class="hero__content">
+            <div class="eyebrow">Archive Adapter Simulator</div>
+            <h1>Adminpanel</h1>
+            <p>
+                Styr simuleringen, instrumenter feil og timeouts, og inspiser gjeldende oppførsel.
+            </p>
+        </div>
+        <div class="hero__badge">/internal/ui</div>
+    </header>
+
+    <div class="toast toast--success" th:if="${message}" th:text="${message}"></div>
+    <div class="toast toast--error" th:if="${error}" th:text="${error}"></div>
+
+    <section class="shortcuts">
+        <div class="shortcuts__label">Snarveier</div>
+        <div class="shortcuts__actions">
+            <form method="post" th:action="@{/internal/ui/reset}">
+                <button class="btn btn--danger" type="submit">Reset state og overstyringer</button>
+            </form>
+        </div>
+    </section>
+
+    <main class="grid">
+
+        <section class="card">
+            <h2>Engangs‑arming</h2>
+            <div class="stack">
+                <h3>Timeout</h3>
+                <form method="post" th:action="@{/internal/ui/arm-timeout}" class="form">
+                    <label>
+                        Gruppe
+                        <select name="group" required>
+                            <option th:each="g : ${armGroups}" th:value="${g.value}" th:text="${g.label}"></option>
+                        </select>
+                    </label>
+                    <label>
+                        Delay (ISO‑8601, valgfritt)
+                        <input name="delay" type="text" placeholder="PT5S"/>
+                    </label>
+                    <button class="btn" type="submit">Arm timeout (neste kall)</button>
+                </form>
+
+                <h3>Fail</h3>
+                <form method="post" th:action="@{/internal/ui/arm-fail}" class="form">
+                    <label>
+                        Gruppe
+                        <select name="group" required>
+                            <option th:each="g : ${armGroups}" th:value="${g.value}" th:text="${g.label}"></option>
+                        </select>
+                    </label>
+                    <div class="row">
+                        <label>
+                            Status (HTTP‑kode)
+                            <input name="status" type="number" placeholder="500"/>
+                        </label>
+                    </div>
+                    <label>
+                        Body (valgfritt)
+                        <textarea name="body" rows="3" placeholder="Simulert feilmelding"></textarea>
+                    </label>
+                    <button class="btn" type="submit">Arm fail (neste kall)</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Sett oppførsel</h2>
+            <form method="post" th:action="@{/internal/ui/behavior}" class="form" data-role="behavior-form">
+                <label>
+                    Gruppe
+                    <select name="group" required>
+                        <option th:each="g : ${groups}" th:value="${g.value}" th:text="${g.label}"></option>
+                    </select>
+                </label>
+                <label>
+                    Mode
+                    <select name="mode" required>
+                        <option th:each="m : ${modes}" th:value="${m}" th:text="${m}"></option>
+                    </select>
+                </label>
+                <label data-field="resource">
+                    Ressurs (kun for group=resource)
+                    <select name="resource">
+                        <option value="">– velg ressurs –</option>
+                        <option th:each="r : ${resources}"
+                                th:value="${r.name}"
+                                th:text="${r.name + ' (' + r.path + ')'}"></option>
+                    </select>
+                </label>
+                <div class="row" data-field="status-delay-row">
+                    <label data-field="status">
+                        Status (HTTP‑kode)
+                        <input name="status" type="number" placeholder="500"/>
+                    </label>
+                    <label data-field="delay">
+                        Delay (ISO‑8601)
+                        <input name="delay" type="text" placeholder="PT5S"/>
+                    </label>
+                </div>
+                <label data-field="body">
+                    Body
+                    <textarea name="body" rows="3" placeholder="Simulert feilmelding"></textarea>
+                </label>
+                <button class="btn btn--accent" type="submit">Oppdater oppførsel</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Reset oppførsel</h2>
+            <form method="post" th:action="@{/internal/ui/behavior/reset}" class="form" data-role="reset-form">
+                <label>
+                    Gruppe
+                    <select name="group" required>
+                        <option th:each="g : ${groups}" th:value="${g.value}" th:text="${g.label}"></option>
+                    </select>
+                </label>
+                <label data-field="resource">
+                    Ressurs (kun for group=resource)
+                    <select name="resource">
+                        <option value="">– velg ressurs –</option>
+                        <option th:each="r : ${resources}"
+                                th:value="${r.name}"
+                                th:text="${r.name + ' (' + r.path + ')'}"></option>
+                    </select>
+                </label>
+                <button class="btn" type="submit">Reset valgt oppførsel</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Aktive overstyringer</h2>
+            <div class="table table--overrides" th:if="${!#lists.isEmpty(behaviorRows)}">
+                <div class="table__head">
+                    <div>Gruppe</div>
+                    <div>Ressurs</div>
+                    <div>Nøkkel</div>
+                    <div>Mode</div>
+                    <div>Detaljer</div>
+                    <div>Handling</div>
+                </div>
+                <div class="table__row" th:each="row : ${behaviorRows}">
+                    <div th:text="${row.groupLabel}"></div>
+                    <div th:text="${row.resourceLabel} ?: '-'"></div>
+                    <div class="mono" th:text="${row.key}"></div>
+                    <div th:text="${row.mode}" class="tag"></div>
+                    <div class="details">
+                        <div><span class="details__label">Status</span><span th:text="${row.status} ?: '-'"></span></div>
+                        <div><span class="details__label">Delay</span><span th:text="${row.delay} ?: '-'"></span></div>
+                        <div><span class="details__label">Body</span><span th:text="${row.body} ?: '-'"></span></div>
+                    </div>
+                    <div>
+                        <form method="post" th:action="@{/internal/ui/behavior/reset}">
+                            <input type="hidden" name="group" th:value="${row.group}"/>
+                            <input type="hidden" name="resource" th:value="${row.resourceValue}"/>
+                            <button class="btn btn--ghost" type="submit">Reset</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <p class="muted" th:if="${#lists.isEmpty(behaviorRows)}">Ingen aktive overstyringer.</p>
+        </section>
+
+        <section class="card">
+            <h2>Tilgjengelige ressurser</h2>
+            <div class="table table--resources">
+                <div class="table__head">
+                    <div>Navn</div>
+                    <div>Path</div>
+                </div>
+                <div class="table__row" th:each="r : ${resources}">
+                    <div th:text="${r.name}"></div>
+                    <div class="mono" th:text="${r.path}"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<script>
+    const behaviorForm = document.querySelector('form[data-role="behavior-form"]');
+    const resetForm = document.querySelector('form[data-role="reset-form"]');
+
+    function toggleBehaviorFields(form) {
+        if (!form) return;
+        const groupSelect = form.querySelector('select[name="group"]');
+        const modeSelect = form.querySelector('select[name="mode"]');
+        const resourceField = form.querySelector('[data-field="resource"]');
+        const statusField = form.querySelector('[data-field="status"]');
+        const delayField = form.querySelector('[data-field="delay"]');
+        const bodyField = form.querySelector('[data-field="body"]');
+        const statusDelayRow = form.querySelector('[data-field="status-delay-row"]');
+
+        const setVisible = (element, visible) => {
+            if (!element) return;
+            element.style.display = visible ? "" : "none";
+            element.setAttribute("aria-hidden", (!visible).toString());
+        };
+
+        const showResource = groupSelect ? groupSelect.value === "resource" : false;
+        const showStatus = modeSelect ? modeSelect.value === "FAIL" : false;
+        const showDelay = modeSelect ? modeSelect.value === "TIMEOUT" : false;
+        const showBody = modeSelect ? modeSelect.value === "FAIL" : false;
+
+        setVisible(resourceField, showResource);
+        setVisible(statusField, showStatus);
+        setVisible(delayField, showDelay);
+        setVisible(bodyField, showBody);
+        setVisible(statusDelayRow, showStatus || showDelay);
+    }
+
+    function toggleResetFields(form) {
+        if (!form) return;
+        const groupSelect = form.querySelector('select[name="group"]');
+        const resourceField = form.querySelector('[data-field="resource"]');
+        const setVisible = (element, visible) => {
+            if (!element) return;
+            element.style.display = visible ? "" : "none";
+            element.setAttribute("aria-hidden", (!visible).toString());
+        };
+        const showResource = groupSelect ? groupSelect.value === "resource" : false;
+        setVisible(resourceField, showResource);
+    }
+
+    function wire(form, toggleFn) {
+        if (!form) return;
+        const selects = form.querySelectorAll('select');
+        selects.forEach((select) => {
+            select.addEventListener('change', () => toggleFn(form));
+        });
+        toggleFn(form);
+    }
+
+    wire(behaviorForm, toggleBehaviorFields);
+    wire(resetForm, toggleResetFields);
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+simulator:
+  admin:
+    username: admin
+    password: admin

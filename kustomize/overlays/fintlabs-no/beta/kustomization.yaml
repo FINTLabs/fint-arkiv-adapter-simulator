@@ -3,4 +3,36 @@ kind: Kustomization
 namespace: fintlabs-no
 
 resources:
-  - ../../../base
+    - ../../../base
+
+patches:
+    -   target:
+            kind: Deployment
+            name: fint-arkiv-adapter-simulator
+        patch: |-
+            -   op: replace
+                path: /spec/template/spec/containers/0/env/3/value
+                value: /beta/api/arkiv/simulator
+            -   op: replace
+                path: /spec/template/spec/containers/0/startupProbe/httpGet/path
+                value: /beta/api/arkiv/simulator/actuator/health
+            -   op: replace
+                path: /spec/template/spec/containers/0/readinessProbe/httpGet/path
+                value: /beta/api/arkiv/simulator/actuator/health/readiness
+            -   op: replace
+                path: /spec/template/spec/containers/0/livenessProbe/httpGet/path
+                value: /beta/api/arkiv/simulator/actuator/health/liveness
+    -   target:
+            kind: PodMonitor
+            name: fint-arkiv-adapter-simulator
+        patch: |-
+            -   op: replace
+                path: /spec/podMetricsEndpoints/0/path
+                value: /beta/api/arkiv/simulator/actuator/prometheus
+    -   target:
+            kind: IngressRoute
+            name: fint-arkiv-adapter-simulator
+        patch: |-
+            -   op: replace
+                path: /spec/routes/0/match
+                value: Host(`flyt.vigoiks.no`) && (PathPrefix(`/beta/api/arkiv/simulator/internal/mock`) || PathPrefix(`/beta/api/arkiv/simulator/internal/ui`) || PathPrefix(`/beta/api/arkiv/simulator/css/admin.css`))

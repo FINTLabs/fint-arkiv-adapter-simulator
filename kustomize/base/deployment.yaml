@@ -1,35 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fint-arkiv-adapter-simulator
-  namespace: fintlabs-no
-  labels:
-    app: fint-arkiv-adapter-simulator
-    app.kubernetes.io/name: fint-arkiv-adapter-simulator
-    app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
-    app.kubernetes.io/version: latest
-    app.kubernetes.io/component: backend
-    app.kubernetes.io/part-of: fint-flyt
-    app.kubernetes.io/managed-by: kustomize
-    fintlabs.no/team: flyt
-    fintlabs.no/org-id: fintlabs.no
-spec:
-  progressDeadlineSeconds: 600
-  replicas: 1
-  revisionHistoryLimit: 10
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-  selector:
-    matchLabels:
-      app: fint-arkiv-adapter-simulator
-  template:
-    metadata:
-      annotations:
-        kubectl.kubernetes.io/default-container: fint-arkiv-adapter-simulator
-      labels:
+    name: fint-arkiv-adapter-simulator
+    namespace: fintlabs-no
+    labels:
         app: fint-arkiv-adapter-simulator
         app.kubernetes.io/name: fint-arkiv-adapter-simulator
         app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
@@ -39,66 +13,92 @@ spec:
         app.kubernetes.io/managed-by: kustomize
         fintlabs.no/team: flyt
         fintlabs.no/org-id: fintlabs.no
-        observability.fintlabs.no/loki: "true"
-    spec:
-      imagePullSecrets:
-        - name: ghcr
-      terminationGracePeriodSeconds: 30
-      containers:
-        - name: fint-arkiv-adapter-simulator
-          image: ghcr.io/fintlabs/fint-arkiv-adapter-simulator:sha-0000000
-          imagePullPolicy: Always
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-            - name: wiremock
-              containerPort: 9090
-              protocol: TCP
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: -XX:+ExitOnOutOfMemoryError
-            - name: fint.org-id
-              value: fintlabs.no
-            - name: TZ
-              value: Europe/Oslo
-            - name: spring.mvc.servlet.path
-              value: /api/arkiv/simulator
-          envFrom:
-            - secretRef:
-                name: fint-flyt-archive-adapter-simulator
-          startupProbe:
-            httpGet:
-              path: /api/arkiv/simulator/actuator/health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 90
-            failureThreshold: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 3
-          readinessProbe:
-            httpGet:
-              path: /api/arkiv/simulator/actuator/health/readiness
-              port: 8080
-              scheme: HTTP
-            failureThreshold: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 3
-          livenessProbe:
-            httpGet:
-              path: /api/arkiv/simulator/actuator/health/liveness
-              port: 8080
-              scheme: HTTP
-            failureThreshold: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 3
-          resources:
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
+spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
+    selector:
+        matchLabels:
+            app: fint-arkiv-adapter-simulator
+    template:
+        metadata:
+            annotations:
+                kubectl.kubernetes.io/default-container: fint-arkiv-adapter-simulator
+            labels:
+                app: fint-arkiv-adapter-simulator
+                app.kubernetes.io/name: fint-arkiv-adapter-simulator
+                app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
+                app.kubernetes.io/version: latest
+                app.kubernetes.io/component: backend
+                app.kubernetes.io/part-of: fint-flyt
+                app.kubernetes.io/managed-by: kustomize
+                fintlabs.no/team: flyt
+                fintlabs.no/org-id: fintlabs.no
+                observability.fintlabs.no/loki: "true"
+        spec:
+            imagePullSecrets:
+                -   name: ghcr
+            terminationGracePeriodSeconds: 30
+            containers:
+                -   name: fint-arkiv-adapter-simulator
+                    image: ghcr.io/fintlabs/fint-arkiv-adapter-simulator:sha-0000000
+                    imagePullPolicy: Always
+                    ports:
+                        -   name: http
+                            containerPort: 8080
+                            protocol: TCP
+                        -   name: wiremock
+                            containerPort: 9090
+                            protocol: TCP
+                    env:
+                        -   name: JAVA_TOOL_OPTIONS
+                            value: -XX:+ExitOnOutOfMemoryError
+                        -   name: fint.org-id
+                            value: fintlabs.no
+                        -   name: TZ
+                            value: Europe/Oslo
+                        -   name: spring.mvc.servlet.path
+                            value: /api/arkiv/simulator
+                    envFrom:
+                        -   secretRef:
+                                name: fint-flyt-archive-adapter-simulator
+                    startupProbe:
+                        httpGet:
+                            path: /api/arkiv/simulator/actuator/health
+                            port: 8080
+                            scheme: HTTP
+                        initialDelaySeconds: 90
+                        failureThreshold: 30
+                        periodSeconds: 10
+                        successThreshold: 1
+                        timeoutSeconds: 3
+                    readinessProbe:
+                        httpGet:
+                            path: /api/arkiv/simulator/actuator/health/readiness
+                            port: 8080
+                            scheme: HTTP
+                        failureThreshold: 5
+                        periodSeconds: 10
+                        successThreshold: 1
+                        timeoutSeconds: 3
+                    livenessProbe:
+                        httpGet:
+                            path: /api/arkiv/simulator/actuator/health/liveness
+                            port: 8080
+                            scheme: HTTP
+                        failureThreshold: 5
+                        periodSeconds: 10
+                        successThreshold: 1
+                        timeoutSeconds: 3
+                    resources:
+                        limits:
+                            memory: "512Mi"
+                            cpu: "500m"
+                        requests:
+                            memory: "512Mi"
+                            cpu: "500m"

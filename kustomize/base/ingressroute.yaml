@@ -1,25 +1,25 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: fint-arkiv-adapter-simulator
-  namespace: fintlabs-no
-  labels:
-    app: fint-arkiv-adapter-simulator
-    app.kubernetes.io/name: fint-arkiv-adapter-simulator
-    app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
-    app.kubernetes.io/version: latest
-    app.kubernetes.io/component: backend
-    app.kubernetes.io/part-of: fint-flyt
-    app.kubernetes.io/managed-by: kustomize
-    fintlabs.no/team: flyt
-    fintlabs.no/org-id: fintlabs.no
+    name: fint-arkiv-adapter-simulator
+    namespace: fintlabs-no
+    labels:
+        app: fint-arkiv-adapter-simulator
+        app.kubernetes.io/name: fint-arkiv-adapter-simulator
+        app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
+        app.kubernetes.io/version: latest
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/part-of: fint-flyt
+        app.kubernetes.io/managed-by: kustomize
+        fintlabs.no/team: flyt
+        fintlabs.no/org-id: fintlabs.no
 spec:
-  entryPoints:
-    - web
-  routes:
-    - kind: Rule
-      match: Host(`flyt.vigoiks.no`) && (PathPrefix(`/api/arkiv/simulator/internal/mock`) || PathPrefix(`/api/arkiv/simulator/internal/ui`) || PathPrefix(`/api/arkiv/simulator/css/admin.css`))
-      services:
-        - name: fint-arkiv-adapter-simulator
-          namespace: fintlabs-no
-          port: 8080
+    entryPoints:
+        - web
+    routes:
+        -   kind: Rule
+            match: Host(`flyt.vigoiks.no`) && (PathPrefix(`/api/arkiv/simulator/internal/mock`) || PathPrefix(`/api/arkiv/simulator/internal/ui`) || PathPrefix(`/api/arkiv/simulator/css/admin.css`))
+            services:
+                -   name: fint-arkiv-adapter-simulator
+                    namespace: fintlabs-no
+                    port: 8080

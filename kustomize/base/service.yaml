@@ -1,28 +1,28 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fint-arkiv-adapter-simulator
-  namespace: fintlabs-no
-  labels:
-    app: fint-arkiv-adapter-simulator
-    app.kubernetes.io/name: fint-arkiv-adapter-simulator
-    app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
-    app.kubernetes.io/version: latest
-    app.kubernetes.io/component: backend
-    app.kubernetes.io/part-of: fint-flyt
-    app.kubernetes.io/managed-by: kustomize
-    fintlabs.no/team: flyt
-    fintlabs.no/org-id: fintlabs.no
+    name: fint-arkiv-adapter-simulator
+    namespace: fintlabs-no
+    labels:
+        app: fint-arkiv-adapter-simulator
+        app.kubernetes.io/name: fint-arkiv-adapter-simulator
+        app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
+        app.kubernetes.io/version: latest
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/part-of: fint-flyt
+        app.kubernetes.io/managed-by: kustomize
+        fintlabs.no/team: flyt
+        fintlabs.no/org-id: fintlabs.no
 spec:
-  type: ClusterIP
-  selector:
-    app: fint-arkiv-adapter-simulator
-  ports:
-    - name: http
-      protocol: TCP
-      port: 8080
-      targetPort: 8080
-    - name: wiremock
-      protocol: TCP
-      port: 9090
-      targetPort: 9090
+    type: ClusterIP
+    selector:
+        app: fint-arkiv-adapter-simulator
+    ports:
+        -   name: http
+            protocol: TCP
+            port: 8080
+            targetPort: 8080
+        -   name: wiremock
+            protocol: TCP
+            port: 9090
+            targetPort: 9090

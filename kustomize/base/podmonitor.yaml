@@ -1,28 +1,28 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: fint-arkiv-adapter-simulator
-  namespace: fintlabs-no
-  labels:
-    app: fint-arkiv-adapter-simulator
-    app.kubernetes.io/name: fint-arkiv-adapter-simulator
-    app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
-    app.kubernetes.io/version: latest
-    app.kubernetes.io/component: backend
-    app.kubernetes.io/part-of: fint-flyt
-    app.kubernetes.io/managed-by: kustomize
-    fintlabs.no/team: flyt
-    fintlabs.no/org-id: fintlabs.no
+    name: fint-arkiv-adapter-simulator
+    namespace: fintlabs-no
+    labels:
+        app: fint-arkiv-adapter-simulator
+        app.kubernetes.io/name: fint-arkiv-adapter-simulator
+        app.kubernetes.io/instance: fint-arkiv-adapter-simulator_fintlabs_no
+        app.kubernetes.io/version: latest
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/part-of: fint-flyt
+        app.kubernetes.io/managed-by: kustomize
+        fintlabs.no/team: flyt
+        fintlabs.no/org-id: fintlabs.no
 spec:
-  jobLabel: app.kubernetes.io/name
-  podTargetLabels:
-    - app
-    - fintlabs.no/team
-    - fintlabs.no/org-id
-  podMetricsEndpoints:
-    - port: http
-      path: /api/arkiv/simulator/actuator/prometheus
-      honorLabels: false
-  selector:
-    matchLabels:
-      app: fint-arkiv-adapter-simulator
+    jobLabel: app.kubernetes.io/name
+    podTargetLabels:
+        - app
+        - fintlabs.no/team
+        - fintlabs.no/org-id
+    podMetricsEndpoints:
+        -   port: http
+            path: /api/arkiv/simulator/actuator/prometheus
+            honorLabels: false
+    selector:
+        matchLabels:
+            app: fint-arkiv-adapter-simulator

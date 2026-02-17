@@ -37,8 +37,7 @@ class AdminSecurityConfig(
                     .authenticated()
                     .anyRequest()
                     .permitAll()
-            }
-            .httpBasic(Customizer.withDefaults())
+            }.httpBasic(Customizer.withDefaults())
         return http.build()
     }
 

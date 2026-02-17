@@ -50,6 +50,8 @@ dependencies {
     implementation("no.fint:fint-arkiv-resource-model-java:3.21.10")
     implementation("no.fint:fint-administrasjon-resource-model-java:3.21.10")
 
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
     compileOnly("javax.validation:validation-api:2.0.1.Final")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

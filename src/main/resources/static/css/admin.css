@@ -77,15 +77,6 @@ body::before {
     gap: 6px;
 }
 
-.hero__badge {
-    padding: 10px 16px;
-    border-radius: 999px;
-    background: var(--accent-strong);
-    color: white;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-}
-
 .eyebrow {
     font-weight: 600;
     font-size: 0.85rem;

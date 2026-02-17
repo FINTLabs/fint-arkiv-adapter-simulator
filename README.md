@@ -3,13 +3,16 @@
 Spring Boot + WireMock‑simulator for archive adapter‑APIet som brukes av `fint-flyt-archive-gateway`.
 
 **Porter**
-- `8080`: Spring Boot (actuator + interne/admin‑endepunkter)
+- `8080`: Spring Boot (actuator + interne/admin‑endepunkter + UI)
 - `9090`: WireMock (archive adapter‑endepunkter)
 
 **Kjør**
 ```bash
-./gradlew bootRun
+SPRING_PROFILES_ACTIVE=local-staging ./gradlew bootRun
 ```
+
+Profilen `local-staging` setter Basic Auth-bruker for admin-endepunktene via:
+- `src/main/resources/application-local-staging.yaml`
 
 **Oversikt over oppførsel**
 - `POST /arkiv/noark/sak` og `PUT /arkiv/noark/sak/mappeid/{caseId}` returnerer `202 Accepted` med `Location` til et status‑endepunkt.
@@ -18,10 +21,10 @@ Spring Boot + WireMock‑simulator for archive adapter‑APIet som brukes av `fi
 - `POST /arkiv/noark/sak/$query` støtter OData‑filter slik gatewayen bruker (kun `eq` + `and`).
 
 **Hardkodede data og hvor de endres**
-- Statiske ressurser/kodeverk: `/Users/janovekongshaug/Repositories/fint-arkiv-adapter-simulator/src/main/kotlin/no/novari/flyt/archive/simulator/simulation/ResourceCatalog.kt` (oppdater `definitions`‑listen; hver entry bruker FINT‑modellklasser og legger til `_links.self`).
-- Sak, journalpost og fil‑oppførsel: `/Users/janovekongshaug/Repositories/fint-arkiv-adapter-simulator/src/main/kotlin/no/novari/flyt/archive/simulator/wiremock/InMemoryStore.kt` (default‑titler, journalpost‑nummerering, mapping fra request‑JSON).
-- OData‑filter (søk på sak): `/Users/janovekongshaug/Repositories/fint-arkiv-adapter-simulator/src/main/kotlin/no/novari/flyt/archive/simulator/simulation/CaseFilterSupport.kt`.
-- Runtime‑konfigurasjon: `/Users/janovekongshaug/Repositories/fint-arkiv-adapter-simulator/src/main/resources/application.yaml` (timeouts styres av `simulator.post-case-timeout` og `simulator.timeout-buffer`).
+- Statiske ressurser/kodeverk: `src/main/kotlin/no/novari/flyt/archive/simulator/simulation/ResourceCatalog.kt` (oppdater `definitions`‑listen; hver entry bruker FINT‑modellklasser og legger til `_links.self`).
+- Sak, journalpost og fil‑oppførsel: `src/main/kotlin/no/novari/flyt/archive/simulator/wiremock/InMemoryStore.kt` (default‑titler, journalpost‑nummerering, mapping fra request‑JSON).
+- OData‑filter (søk på sak): `src/main/kotlin/no/novari/flyt/archive/simulator/simulation/CaseFilterSupport.kt`.
+- Runtime‑konfigurasjon: `src/main/resources/application.yaml` (timeouts styres av `simulator.post-case-timeout` og `simulator.timeout-buffer`).
 
 **Opprett sak (end‑to‑end)**
 1. Opprett sak (samme format som gatewayen sender, med `_links`):
@@ -196,59 +199,65 @@ Ressurs‑paths:
 
 **Admin‑endepunkter (instrumentering)**
 Alle admin‑endepunkter ligger på port `8080`.
+Alle `/internal/*` krever Basic Auth.
 
 Web‑UI for admin:
-- `http://localhost:8080/internal/ui`
+- `http://localhost:8080/internal/ui` (bruk Basic Auth)
+
+Eksempel med `curl`:
+```bash
+curl -u admin:admin -i http://localhost:8080/internal/mock/behavior
+```
 
 Hent aktive overstyringer og liste over ressursnavn/paths:
 ```bash
-curl -i http://localhost:8080/internal/mock/behavior
+curl -u admin:admin -i http://localhost:8080/internal/mock/behavior
 ```
 
 Reset alt (state + overstyringer):
 ```bash
-curl -i -X POST http://localhost:8080/internal/mock/reset
+curl -u admin:admin -i -X POST http://localhost:8080/internal/mock/reset
 ```
 
 **Engangs‑timeout (neste POST /arkiv/noark/sak)**
 ```bash
-curl -i -X POST http://localhost:8080/internal/mock/arm-timeout
+curl -u admin:admin -i -X POST http://localhost:8080/internal/mock/arm-timeout
 ```
 
 **Engangs‑timeout for journalpost eller fil**
 ```bash
-curl -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=journalpost"
-curl -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=file"
+curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=journalpost"
+curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=file"
 ```
 
 Med egendefinert delay:
 ```bash
-curl -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=journalpost&delay=PT10S"
+curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=journalpost&delay=PT10S"
 ```
 
 **Engangs‑feil (neste kall)**
 ```bash
-curl -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=case&status=500&body=Simulert%20feil"
-curl -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=journalpost&status=503"
-curl -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=file&status=500"
+curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=case&status=500&body=Simulert%20feil"
+curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=journalpost&status=503"
+curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=file&status=500"
 ```
 
 **Sett oppførsel fra og med nå**
 Alle requests bruker JSON:
 ```bash
-curl -i -X PUT http://localhost:8080/internal/mock/behavior \
+curl -u admin:admin -i -X PUT http://localhost:8080/internal/mock/behavior \
   -H "Content-Type: application/json" \
   -d '{"group":"case","mode":"FAIL","status":500,"body":"Simulated failure"}'
 ```
 
 ```bash
-curl -i -X PUT http://localhost:8080/internal/mock/behavior \
+curl -u admin:admin -i -X PUT http://localhost:8080/internal/mock/behavior \
   -H "Content-Type: application/json" \
   -d '{"group":"journalpost","mode":"TIMEOUT","delay":"PT30S"}'
 ```
 
 ```bash
-curl -i -X PUT http://localhost:8080/internal/mock/behavior \
+curl -u admin:admin -i -X PUT http://localhost:8080/internal/mock/behavior \
   -H "Content-Type: application/json" \
   -d '{"group":"resource","resource":"arkivdel","mode":"EMPTY"}'
 ```
@@ -270,19 +279,33 @@ Oppførselstyper:
 
 **Reset oppførsel**
 ```bash
-curl -i -X DELETE "http://localhost:8080/internal/mock/behavior?group=case"
+curl -u admin:admin -i -X DELETE "http://localhost:8080/internal/mock/behavior?group=case"
 ```
 
 ```bash
-curl -i -X DELETE "http://localhost:8080/internal/mock/behavior?group=resource&resource=arkivdel"
+curl -u admin:admin -i -X DELETE "http://localhost:8080/internal/mock/behavior?group=resource&resource=arkivdel"
 ```
 
 **Logging**
 Logger er JSON‑formattert via `kotlin-logging` og `logback.xml`:
-- `/Users/janovekongshaug/Repositories/fint-arkiv-adapter-simulator/src/main/resources/logback.xml`
+- `src/main/resources/logback.xml`
+
+**Prometheus**
+- Endepunkt: `http://localhost:8080/actuator/prometheus`
+- Aktivert via:
+  - `src/main/resources/application.yaml`
+  - `build.gradle.kts` (`micrometer-registry-prometheus`)
+
+**Kubernetes routing**
+- Ingress (`8080`) brukes kun for admin:
+  - `/internal/ui`
+  - `/internal/mock`
+  - `/css/admin.css`
+- Archive adapter-API (`/arkiv/*`) brukes internt i clusteret via service port `9090`.
+- Service-navn i cluster: `fint-arkiv-adapter-simulator`
 
 **Gateway Base URL**
 Pek gatewayen til WireMock:
 ```
-novari.flyt.archive.gateway.client.fint-archive.base-url=http://archive-adapter-simulator:9090
+novari.flyt.archive.gateway.client.fint-archive.base-url=http://fint-arkiv-adapter-simulator:9090
 ```

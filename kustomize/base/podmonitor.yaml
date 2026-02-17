@@ -21,7 +21,7 @@ spec:
     - fintlabs.no/org-id
   podMetricsEndpoints:
     - port: http
-      path: /actuator/prometheus
+      path: /api/arkiv/simulator/actuator/prometheus
       honorLabels: false
   selector:
     matchLabels:

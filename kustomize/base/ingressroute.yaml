@@ -18,7 +18,7 @@ spec:
     - web
   routes:
     - kind: Rule
-      match: Host(`flyt.vigoiks.no`) && (PathPrefix(`/internal/mock`) || PathPrefix(`/internal/ui`) || PathPrefix(`/css/admin.css`))
+      match: Host(`flyt.vigoiks.no`) && (PathPrefix(`/api/arkiv/simulator/internal/mock`) || PathPrefix(`/api/arkiv/simulator/internal/ui`) || PathPrefix(`/api/arkiv/simulator/css/admin.css`))
       services:
         - name: fint-arkiv-adapter-simulator
           namespace: fintlabs-no

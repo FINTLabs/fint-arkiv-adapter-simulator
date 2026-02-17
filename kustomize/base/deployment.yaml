@@ -62,7 +62,7 @@ spec:
                             value: fintlabs.no
                         -   name: TZ
                             value: Europe/Oslo
-                        -   name: spring.mvc.servlet.path
+                        -   name: server.servlet.context-path
                             value: /api/arkiv/simulator
                     envFrom:
                         -   secretRef:

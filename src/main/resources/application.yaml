@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: archive-adapter-simulator
+
+  output:
+      ansi:
+          enabled: always
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+wiremock:
+  port: 9090
+
+simulator:
+  post-case-timeout: 130s
+  timeout-buffer: 5s

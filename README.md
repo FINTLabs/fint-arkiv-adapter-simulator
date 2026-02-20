@@ -2,11 +2,28 @@
 
 Spring Boot + WireMock‑simulator for archive adapter‑APIet som brukes av `fint-flyt-archive-gateway`.
 
-**Porter**
+## Innholdsfortegnelse
+- [Porter](#porter)
+- [Kjør lokalt](#kjør-lokalt)
+- [Oversikt over oppførsel](#oversikt-over-oppførsel)
+- [Hardkodede data og hvor de endres](#hardkodede-data-og-hvor-de-endres)
+- [Opprett sak (end-to-end)](#opprett-sak-end-to-end)
+- [Legg til journalpost på sak](#legg-til-journalpost-på-sak)
+- [Hent en journalpost](#hent-en-journalpost)
+- [Filopplasting og kobling til journalpost](#filopplasting-og-kobling-til-journalpost)
+- [Søk på sak](#søk-på-sak)
+- [Ressurs/kodeverk-endepunkter](#ressurskodeverk-endepunkter)
+- [Admin-endepunkter (instrumentering)](#admin-endepunkter-instrumentering)
+- [Logging](#logging)
+- [Prometheus](#prometheus)
+- [Kubernetes routing](#kubernetes-routing)
+- [Kubernetes autoskalering (HPA)](#kubernetes-autoskalering-hpa)
+
+## Porter
 - `8080`: Spring Boot (actuator + interne/admin‑endepunkter + UI)
 - `9090`: WireMock (archive adapter‑endepunkter)
 
-**Kjør**
+## Kjør lokalt
 ```bash
 SPRING_PROFILES_ACTIVE=local-staging ./gradlew bootRun
 ```
@@ -14,19 +31,19 @@ SPRING_PROFILES_ACTIVE=local-staging ./gradlew bootRun
 Profilen `local-staging` setter Basic Auth-bruker for admin-endepunktene via:
 - `src/main/resources/application-local-staging.yaml`
 
-**Oversikt over oppførsel**
+## Oversikt over oppførsel
 - `POST /arkiv/noark/sak` og `PUT /arkiv/noark/sak/mappeid/{caseId}` returnerer `202 Accepted` med `Location` til et status‑endepunkt.
 - Poll status‑endepunktet til du får `201 Created` med `Location` til selve ressursen.
 - Sak‑IDer genereres som `YYYY/sekvens` (eksempel: `2026/1`).
 - `POST /arkiv/noark/sak/$query` støtter OData‑filter slik gatewayen bruker (kun `eq` + `and`).
 
-**Hardkodede data og hvor de endres**
+## Hardkodede data og hvor de endres
 - Statiske ressurser/kodeverk: `src/main/kotlin/no/novari/flyt/archive/simulator/simulation/ResourceCatalog.kt` (oppdater `definitions`‑listen; hver entry bruker FINT‑modellklasser og legger til `_links.self`).
 - Sak, journalpost og fil‑oppførsel: `src/main/kotlin/no/novari/flyt/archive/simulator/wiremock/InMemoryStore.kt` (default‑titler, journalpost‑nummerering, mapping fra request‑JSON).
 - OData‑filter (søk på sak): `src/main/kotlin/no/novari/flyt/archive/simulator/simulation/CaseFilterSupport.kt`.
 - Runtime‑konfigurasjon: `src/main/resources/application.yaml` (timeouts styres av `simulator.post-case-timeout` og `simulator.timeout-buffer`).
 
-**Opprett sak (end‑to‑end)**
+## Opprett sak (end-to-end)
 1. Opprett sak (samme format som gatewayen sender, med `_links`):
 ```bash
 curl -i -X POST http://localhost:9090/arkiv/noark/sak \
@@ -50,7 +67,7 @@ curl -i http://localhost:9090/_status/sak/<statusId>
 curl -i http://localhost:9090/arkiv/noark/sak/2026/1
 ```
 
-**Legg til journalpost på sak**
+## Legg til journalpost på sak
 Simulatoren forventer samme wrapper som gatewayen sender:
 ```bash
 curl -i -X PUT "http://localhost:9090/arkiv/noark/sak/mappeid/2026/1" \
@@ -75,12 +92,12 @@ curl -i http://localhost:9090/_status/sak/<statusId>
 curl -i http://localhost:9090/arkiv/noark/sak/2026/1
 ```
 
-**Hent én journalpost**
+## Hent en journalpost
 ```bash
 curl -i http://localhost:9090/arkiv/noark/sak/2026/1/journalpost/1
 ```
 
-**Filopplasting og kobling til journalpost**
+## Filopplasting og kobling til journalpost
 1. Opprett fil:
 ```bash
 curl -i -X POST http://localhost:9090/arkiv/noark/dokumentfil \
@@ -131,7 +148,7 @@ curl -i -X PUT "http://localhost:9090/arkiv/noark/sak/mappeid/2026/1" \
       }'
 ```
 
-**Søk på Sak**
+## Søk på sak
 Gatewayen sender OData‑filter som `text/plain` i body til `/arkiv/noark/sak/$query`.
 Simulatoren støtter kun `eq` + `and` for feltene gatewayen faktisk bruker.
 
@@ -168,7 +185,7 @@ curl -i -X POST "http://localhost:9090/arkiv/noark/sak/\$query" \
   -d "klassifikasjon/primar/ordning eq 'KSS-1' and klassifikasjon/primar/verdi eq 'A-100'"
 ```
 
-**Ressurs/kodeverk‑endepunkter**
+## Ressurs/kodeverk-endepunkter
 Alle ressurser krever `sinceTimeStamp` på collection‑oppslag.
 ```bash
 curl -i "http://localhost:9090/arkiv/noark/arkivdel?sinceTimeStamp=0"
@@ -197,7 +214,7 @@ Ressurs‑paths:
 - `/administrasjon/personal/personalressurs`
 - `/administrasjon/personal/person`
 
-**Admin‑endepunkter (instrumentering)**
+## Admin-endepunkter (instrumentering)
 Alle admin‑endepunkter ligger på port `8080`.
 Alle `/internal/*` krever Basic Auth.
 
@@ -219,12 +236,12 @@ Reset alt (state + overstyringer):
 curl -u admin:admin -i -X POST http://localhost:8080/internal/mock/reset
 ```
 
-**Engangs‑timeout (neste POST /arkiv/noark/sak)**
+### Engangs-timeout (neste POST /arkiv/noark/sak)
 ```bash
 curl -u admin:admin -i -X POST http://localhost:8080/internal/mock/arm-timeout
 ```
 
-**Engangs‑timeout for journalpost eller fil**
+### Engangs-timeout for journalpost eller fil
 ```bash
 curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=journalpost"
 curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=file"
@@ -235,14 +252,14 @@ Med egendefinert delay:
 curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-timeout?group=journalpost&delay=PT10S"
 ```
 
-**Engangs‑feil (neste kall)**
+### Engangs-feil (neste kall)
 ```bash
 curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=case&status=500&body=Simulert%20feil"
 curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=journalpost&status=503"
 curl -u admin:admin -i -X POST "http://localhost:8080/internal/mock/arm-fail?group=file&status=500"
 ```
 
-**Sett oppførsel fra og med nå**
+### Sett oppførsel fra og med nå
 Alle requests bruker JSON:
 ```bash
 curl -u admin:admin -i -X PUT http://localhost:8080/internal/mock/behavior \
@@ -277,7 +294,7 @@ Oppførselstyper:
 
 `delay` bruker ISO‑8601 varighetsformat i JSON, f.eks. `PT5S`.
 
-**Reset oppførsel**
+### Reset oppførsel
 ```bash
 curl -u admin:admin -i -X DELETE "http://localhost:8080/internal/mock/behavior?group=case"
 ```
@@ -286,17 +303,17 @@ curl -u admin:admin -i -X DELETE "http://localhost:8080/internal/mock/behavior?g
 curl -u admin:admin -i -X DELETE "http://localhost:8080/internal/mock/behavior?group=resource&resource=arkivdel"
 ```
 
-**Logging**
+## Logging
 Logger er JSON‑formattert via `kotlin-logging` og `logback.xml`:
 - `src/main/resources/logback.xml`
 
-**Prometheus**
+## Prometheus
 - Endepunkt: `http://localhost:8080/actuator/prometheus`
 - Aktivert via:
   - `src/main/resources/application.yaml`
   - `build.gradle.kts` (`micrometer-registry-prometheus`)
 
-**Kubernetes routing**
+## Kubernetes routing
 - Ingress (`8080`) brukes kun for admin:
   - `/internal/ui`
   - `/internal/mock`
@@ -304,8 +321,9 @@ Logger er JSON‑formattert via `kotlin-logging` og `logback.xml`:
 - Archive adapter-API (`/arkiv/*`) brukes internt i clusteret via service port `9090`.
 - Service-navn i cluster: `fint-arkiv-adapter-simulator`
 
-**Gateway Base URL**
-Pek gatewayen til WireMock:
-```
-novari.flyt.archive.gateway.client.fint-archive.base-url=http://fint-arkiv-adapter-simulator:9090
-```
+## Kubernetes autoskalering (HPA)
+- Definert i `kustomize/base/hpa.yaml` med `autoscaling/v2`.
+- `minReplicas: 1` og `maxReplicas: 3`.
+- CPU-mål er `averageUtilization: 90` på Deployment `fint-arkiv-adapter-simulator`.
+- Deployment står fortsatt med `replicas: 1` som default, og HPA skalerer opp ved vedvarende last.
+- Krever at clusteret har Metrics API tilgjengelig (typisk `metrics-server`) for at HPA skal kunne beregne CPU-bruk.

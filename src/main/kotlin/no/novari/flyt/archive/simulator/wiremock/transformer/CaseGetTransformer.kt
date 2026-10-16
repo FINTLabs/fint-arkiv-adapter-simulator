@@ -30,6 +30,7 @@ class CaseGetTransformer(
         val caseId =
             request.url
                 .substringAfter("/arkiv/noark/sak/")
+                .removePrefix("mappeid/")
         val caseResource =
             if (caseId.isNotBlank()) {
                 store.getCase(caseId)

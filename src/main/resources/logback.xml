@@ -9,6 +9,8 @@
                 <loggerName/>
                 <message/>
                 <arguments/>
+                <mdc/>
+                <keyValuePairs/>
                 <throwableClassName/>
                 <throwableMessage/>
                 <stackTrace useShortFormat="true"/>

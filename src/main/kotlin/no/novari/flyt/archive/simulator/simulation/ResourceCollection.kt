@@ -1,7 +1,7 @@
 package no.novari.flyt.archive.simulator.simulation
 
 import com.fasterxml.jackson.core.type.TypeReference
-import no.fint.model.resource.AbstractCollectionResources
+import no.novari.fint.model.resource.AbstractCollectionResources
 
 class ResourceCollection<T> : AbstractCollectionResources<T> {
     constructor(items: Collection<T>) : super() {

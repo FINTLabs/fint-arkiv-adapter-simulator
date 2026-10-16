@@ -56,12 +56,8 @@ spec:
                             containerPort: 9090
                             protocol: TCP
                     env:
-                        -   name: JAVA_TOOL_OPTIONS
-                            value: -XX:+ExitOnOutOfMemoryError
                         -   name: fint.org-id
                             value: fintlabs.no
-                        -   name: TZ
-                            value: Europe/Oslo
                         -   name: server.servlet.context-path
                             value: /api/arkiv/simulator
                     envFrom:

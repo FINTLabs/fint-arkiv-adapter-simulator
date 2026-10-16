@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.extension.ResponseTransformerV2
 import com.github.tomakehurst.wiremock.http.Response
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.fint.model.resource.arkiv.noark.SakResources
+import no.novari.fint.model.resource.arkiv.noark.SakResources
 import no.novari.flyt.archive.simulator.simulation.BehaviorKeys
 import no.novari.flyt.archive.simulator.simulation.BehaviorMode
 import no.novari.flyt.archive.simulator.simulation.SimulatorBehaviorStore

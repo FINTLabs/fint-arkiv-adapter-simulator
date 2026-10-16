@@ -1,30 +1,30 @@
 package no.novari.flyt.archive.simulator.simulation
 
-import no.fint.model.felles.basisklasser.Begrep
-import no.fint.model.felles.kompleksedatatyper.Identifikator
-import no.fint.model.felles.kompleksedatatyper.Personnavn
-import no.fint.model.resource.FintLinks
-import no.fint.model.resource.Link
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource
-import no.fint.model.resource.arkiv.kodeverk.DokumentStatusResource
-import no.fint.model.resource.arkiv.kodeverk.DokumentTypeResource
-import no.fint.model.resource.arkiv.kodeverk.FormatResource
-import no.fint.model.resource.arkiv.kodeverk.JournalStatusResource
-import no.fint.model.resource.arkiv.kodeverk.JournalpostTypeResource
-import no.fint.model.resource.arkiv.kodeverk.KorrespondansepartTypeResource
-import no.fint.model.resource.arkiv.kodeverk.PartRolleResource
-import no.fint.model.resource.arkiv.kodeverk.SaksmappetypeResource
-import no.fint.model.resource.arkiv.kodeverk.SaksstatusResource
-import no.fint.model.resource.arkiv.kodeverk.SkjermingshjemmelResource
-import no.fint.model.resource.arkiv.kodeverk.TilgangsgruppeResource
-import no.fint.model.resource.arkiv.kodeverk.TilgangsrestriksjonResource
-import no.fint.model.resource.arkiv.kodeverk.TilknyttetRegistreringSomResource
-import no.fint.model.resource.arkiv.kodeverk.VariantformatResource
-import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource
-import no.fint.model.resource.arkiv.noark.ArkivdelResource
-import no.fint.model.resource.arkiv.noark.ArkivressursResource
-import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource
-import no.fint.model.resource.felles.PersonResource
+import no.novari.fint.model.felles.basisklasser.Begrep
+import no.novari.fint.model.felles.kompleksedatatyper.Identifikator
+import no.novari.fint.model.felles.kompleksedatatyper.Personnavn
+import no.novari.fint.model.resource.FintLinks
+import no.novari.fint.model.resource.Link
+import no.novari.fint.model.resource.administrasjon.personal.PersonalressursResource
+import no.novari.fint.model.resource.arkiv.kodeverk.DokumentStatusResource
+import no.novari.fint.model.resource.arkiv.kodeverk.DokumentTypeResource
+import no.novari.fint.model.resource.arkiv.kodeverk.FormatResource
+import no.novari.fint.model.resource.arkiv.kodeverk.JournalStatusResource
+import no.novari.fint.model.resource.arkiv.kodeverk.JournalpostTypeResource
+import no.novari.fint.model.resource.arkiv.kodeverk.KorrespondansepartTypeResource
+import no.novari.fint.model.resource.arkiv.kodeverk.PartRolleResource
+import no.novari.fint.model.resource.arkiv.kodeverk.SaksmappetypeResource
+import no.novari.fint.model.resource.arkiv.kodeverk.SaksstatusResource
+import no.novari.fint.model.resource.arkiv.kodeverk.SkjermingshjemmelResource
+import no.novari.fint.model.resource.arkiv.kodeverk.TilgangsgruppeResource
+import no.novari.fint.model.resource.arkiv.kodeverk.TilgangsrestriksjonResource
+import no.novari.fint.model.resource.arkiv.kodeverk.TilknyttetRegistreringSomResource
+import no.novari.fint.model.resource.arkiv.kodeverk.VariantformatResource
+import no.novari.fint.model.resource.arkiv.noark.AdministrativEnhetResource
+import no.novari.fint.model.resource.arkiv.noark.ArkivdelResource
+import no.novari.fint.model.resource.arkiv.noark.ArkivressursResource
+import no.novari.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource
+import no.novari.fint.model.resource.felles.PersonResource
 
 data class ResourceDefinition<T : FintLinks>(
     val name: String,

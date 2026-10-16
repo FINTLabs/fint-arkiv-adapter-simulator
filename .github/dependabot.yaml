@@ -1,0 +1,62 @@
+version: 2
+updates:
+    - package-ecosystem: gradle
+      directory: "/"
+      schedule:
+          interval: weekly
+          day: monday
+          time: "04:30"
+          timezone: "Europe/Oslo"
+      open-pull-requests-limit: 10
+      groups:
+          spring:
+              patterns:
+                  - "org.springframework*"
+          platform-and-tooling:
+              patterns:
+                  - "org.jetbrains.kotlin*"
+                  - "com.github.ben-manes.versions"
+                  - "org.gradle.toolchains.foojay-resolver-convention"
+                  - "org.jlleitschuh.gradle.ktlint"
+          wiremock:
+              patterns:
+                  - "org.wiremock*"
+          internal:
+              patterns:
+                  - "no.novari*"
+                  - "no.fintlabs*"
+          minor-and-patch:
+              patterns:
+                  - "*"
+              update-types:
+                  - minor
+                  - patch
+      ignore:
+          # 9.x pulls in Jackson 3 (tools.jackson), while Spring Boot 3.5 uses Jackson 2
+          - dependency-name: "net.logstash.logback:logstash-logback-encoder"
+            update-types:
+                - "version-update:semver-major"
+          - dependency-name: "org.springframework*"
+            update-types:
+                - "version-update:semver-major"
+          - dependency-name: "jvm"
+          - dependency-name: "plugin.spring"
+    - package-ecosystem: docker
+      directory: "/"
+      schedule:
+          interval: weekly
+          day: monday
+          time: "04:30"
+          timezone: "Europe/Oslo"
+      open-pull-requests-limit: 5
+    - package-ecosystem: github-actions
+      directory: "/"
+      schedule:
+          interval: weekly
+          day: monday
+          time: "04:30"
+          timezone: "Europe/Oslo"
+      groups:
+          github-actions:
+              patterns:
+                  - "*"

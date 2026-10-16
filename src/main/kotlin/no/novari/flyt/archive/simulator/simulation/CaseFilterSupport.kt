@@ -1,8 +1,8 @@
 package no.novari.flyt.archive.simulator.simulation
 
-import no.fint.model.resource.Link
-import no.fint.model.resource.arkiv.noark.KlasseResource
-import no.fint.model.resource.arkiv.noark.SakResource
+import no.novari.fint.model.resource.Link
+import no.novari.fint.model.resource.arkiv.noark.KlasseResource
+import no.novari.fint.model.resource.arkiv.noark.SakResource
 
 sealed class CaseFilterCondition {
     data class Equals(

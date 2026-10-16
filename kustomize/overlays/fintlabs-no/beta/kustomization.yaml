@@ -11,7 +11,7 @@ patches:
             name: fint-arkiv-adapter-simulator
         patch: |-
             -   op: replace
-                path: /spec/template/spec/containers/0/env/3/value
+                path: /spec/template/spec/containers/0/env/1/value
                 value: /beta/api/arkiv/simulator
             -   op: replace
                 path: /spec/template/spec/containers/0/startupProbe/httpGet/path

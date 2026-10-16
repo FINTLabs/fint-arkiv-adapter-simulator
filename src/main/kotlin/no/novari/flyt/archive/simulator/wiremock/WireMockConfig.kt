@@ -39,7 +39,7 @@ class WireMockConfig(
 ) {
     @Bean
     fun resourceCatalog(): ResourceCatalog {
-        return ResourceCatalog()
+        return ResourceCatalog(properties.baseUrl)
     }
 
     @Bean

@@ -42,6 +42,7 @@ Profilen `local-staging` setter Basic Auth-bruker for admin-endepunktene via:
 - Sak, journalpost og fil‑oppførsel: `src/main/kotlin/no/novari/flyt/archive/simulator/wiremock/InMemoryStore.kt` (default‑titler, journalpost‑nummerering, mapping fra request‑JSON).
 - OData‑filter (søk på sak): `src/main/kotlin/no/novari/flyt/archive/simulator/simulation/CaseFilterSupport.kt`.
 - Runtime‑konfigurasjon: `src/main/resources/application.yaml` (timeouts styres av `simulator.post-case-timeout` og `simulator.timeout-buffer`).
+- Self-lenker bygges som `{simulator.base-url}/{sti}/{identifikatortype}/{id}`, f.eks. `http://fint-arkiv-adapter-simulator:9090/arkiv/noark/arkivressurs/systemid/AR-1`. `simulator.base-url` (env `SIMULATOR_BASE_URL`) må være lik `novari.flyt.archive.gateway.client.fint-archive.base-url` i archive-gateway, slik at id-ene i kodeverket matcher URL-ene frontend bygger fra `referenceTemplate`.
 
 ## Opprett sak (end-to-end)
 1. Opprett sak (samme format som gatewayen sender, med `_links`):

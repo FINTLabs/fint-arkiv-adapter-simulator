@@ -32,7 +32,11 @@ data class ResourceDefinition<T : FintLinks>(
     val items: List<T>,
 )
 
-class ResourceCatalog {
+class ResourceCatalog(
+    baseUrl: String,
+) {
+    private val baseUrl = baseUrl.trimEnd('/')
+
     val definitions: List<ResourceDefinition<out FintLinks>> =
         listOf(
             resourceDefinition(
@@ -441,7 +445,9 @@ class ResourceCatalog {
     ): ArkivressursResource {
         val resource = ArkivressursResource()
         resource.systemId = identifikator(id)
-        resource.addPersonalressurs(Link.with("/administrasjon/personal/personalressurs/$personalressursId"))
+        resource.addPersonalressurs(
+            Link.with(selfHref("/administrasjon/personal/personalressurs", SYSTEM_ID, personalressursId)),
+        )
         return withSelf(resource, "/arkiv/noark/arkivressurs", id)
     }
 
@@ -453,7 +459,7 @@ class ResourceCatalog {
         val resource = PersonalressursResource()
         resource.systemId = identifikator(id)
         resource.brukernavn = identifikator(brukernavn)
-        resource.addPerson(Link.with("/administrasjon/personal/person/$personId"))
+        resource.addPerson(Link.with(selfHref("/administrasjon/personal/person", FODSELSNUMMER, personId)))
         return withSelf(resource, "/administrasjon/personal/personalressurs", id)
     }
 
@@ -467,7 +473,8 @@ class ResourceCatalog {
         navn.fornavn = fornavn
         navn.etternavn = etternavn
         resource.navn = navn
-        return withSelf(resource, "/administrasjon/personal/person", id)
+        resource.fodselsnummer = identifikator(id)
+        return withSelf(resource, "/administrasjon/personal/person", id, FODSELSNUMMER)
     }
 
     private fun <T> begrepResource(
@@ -480,8 +487,7 @@ class ResourceCatalog {
         resource.systemId = identifikator(id)
         resource.kode = kode
         resource.navn = navn
-        resource.addSelf(Link.with("$path/$id"))
-        return resource
+        return withSelf(resource, path, id)
     }
 
     private fun identifikator(value: String): Identifikator {
@@ -494,8 +500,20 @@ class ResourceCatalog {
         resource: T,
         path: String,
         id: String,
+        identifierType: String = SYSTEM_ID,
     ): T {
-        resource.addSelf(Link.with("$path/$id"))
+        resource.addSelf(Link.with(selfHref(path, identifierType, id)))
         return resource
+    }
+
+    private fun selfHref(
+        path: String,
+        identifierType: String,
+        id: String,
+    ): String = "$baseUrl$path/$identifierType/$id"
+
+    private companion object {
+        const val SYSTEM_ID = "systemid"
+        const val FODSELSNUMMER = "fodselsnummer"
     }
 }

@@ -5,6 +5,7 @@ import java.time.Duration
 
 @ConfigurationProperties(prefix = "simulator")
 data class SimulatorProperties(
+    var baseUrl: String = "http://fint-arkiv-adapter-simulator:9090",
     var postCaseTimeout: Duration = Duration.ofSeconds(130),
     var timeoutBuffer: Duration = Duration.ofSeconds(5),
 )

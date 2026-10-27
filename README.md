@@ -328,3 +328,17 @@ Logger er JSON‑formattert via `kotlin-logging` og `logback.xml`:
 - CPU-mål er `averageUtilization: 90` på Deployment `fint-arkiv-adapter-simulator`.
 - Deployment står fortsatt med `replicas: 1` som default, og HPA skalerer opp ved vedvarende last.
 - Krever at clusteret har Metrics API tilgjengelig (typisk `metrics-server`) for at HPA skal kunne beregne CPU-bruk.
+
+## Låsing av avhengigheter
+
+Bygget bruker [Gradle dependency locking](https://docs.gradle.org/current/userguide/dependency_locking.html), slik at hvert bygg løser opp nøyaktig de samme direkte og transitive versjonene. De låste versjonene ligger i de committede `*.lockfile`-filene: `gradle.lockfile` for prosjektets avhengigheter og de andre for Gradle-plugins. En PR viser derfor alle transitive versjonsendringer den fører med seg.
+
+**Automatisk (Dependabot):** Dependabot oppdaterer lockfilene i sine egne PR-er, så det trengs ingen manuelle steg. Hvis to Dependabot-PR-er kommer i konflikt i en lockfile, rebaser Dependabot den gjenværende etter at den første er merget. Skjer ikke det, kommenter `@dependabot recreate` på PR-en.
+
+**Manuelt:** Alle endringer du gjør for hånd som påvirker oppløsningen av avhengigheter, krever at lockfilene regenereres. Det gjelder versjoner, `extra[...]`-properties, constraints, nye eller fjernede avhengigheter og plugin-versjoner:
+
+```bash
+./gradlew dependencies buildEnvironment --write-locks
+```
+
+Commit de oppdaterte lockfilene sammen med endringen. Glemmer du det, feiler bygget både lokalt og i CI med en feilmelding om at den oppløste versjonen «is not part of the dependency lock state».

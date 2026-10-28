@@ -49,6 +49,10 @@ extra["log4j2.version"] = "2.26.1"
 extra["tomcat.version"] = "10.1.59"
 extra["commons-lang3.version"] = "3.21.0"
 
+dependencyLocking {
+    lockAllConfigurations()
+}
+
 dependencies {
     constraints {
         implementation("org.apache.commons:commons-lang3:3.21.0") {

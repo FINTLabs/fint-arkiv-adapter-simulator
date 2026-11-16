@@ -3,12 +3,12 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath(platform("com.fasterxml.jackson:jackson-bom:2.22.4"))
+        classpath(platform("com.fasterxml.jackson:jackson-bom:2.23.0"))
         constraints {
             classpath("org.apache.httpcomponents.client5:httpclient5:5.6.5")
             classpath("org.apache.httpcomponents.core5:httpcore5:5.4.4")
             classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
-            classpath("org.apache.commons:commons-lang3:3.21.0")
+            classpath("org.apache.commons:commons-lang3:3.22.0")
         }
     }
 }
@@ -55,7 +55,7 @@ dependencyLocking {
 
 dependencies {
     constraints {
-        implementation("org.apache.commons:commons-lang3:3.21.0") {
+        implementation("org.apache.commons:commons-lang3:3.22.0") {
             because("Fixes CVE-2025-48924 in the Spring Boot managed version")
         }
     }
@@ -66,7 +66,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.7")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("org.wiremock:wiremock-standalone:3.13.2")

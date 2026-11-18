@@ -60,6 +60,8 @@ spec:
                             value: fintlabs.no
                         -   name: server.servlet.context-path
                             value: /api/arkiv/simulator
+                        -   name: JAVA_TOOL_OPTIONS
+                            value: '-XX:-UseBASE64Intrinsics'
                     envFrom:
                         -   secretRef:
                                 name: fint-flyt-archive-adapter-simulator
